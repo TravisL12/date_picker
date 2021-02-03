@@ -5,18 +5,16 @@
 body {
   font-family: Helvetica;
   margin: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 100vh;
 }
 
 .calendar {
   padding: 5px;
   background: #ffd8d8;
-}
-
-.container {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  height: 100vh;
+  display: inline-block;
 }
 
 .title {

@@ -31,25 +31,35 @@ const createDate = (year, month) => {
   };
 };
 
+const randomSelector = () => Math.random().toString(36).substring(7);
+
+const isSelected = (isSelected) => {
+  return isSelected ? 'selected' : '';
+};
+
+const isChecked = (isChecked) => {
+  return isChecked ? 'checked' : '';
+};
+
 class Calendar {
-  constructor(selector, startDate) {
+  constructor(startDate) {
     this.startDate = startDate ? new Date(startDate) : new Date();
-    this.selector = selector;
-    this.calendar = document.querySelector(selector);
-    if (!this.calendar) {
-      return;
-    }
+    this.selector = randomSelector();
+    this.calendar = document.createElement('div');
+    this.calendar.id = `calendar-${this.selector}`;
     this.calendar.classList.add('calendar');
     this.selectedMonth = this.startDate.getMonth(); // 0-indexed month
     this.selectedYear = this.startDate.getFullYear();
     this.calendar.innerHTML = `
-      <form class='title'></form>
-      <div class='dow-container'></div>
-      <div class='grid'></div>
+    <form class='title'></form>
+    <div class='dow-container'></div>
+    <div class='grid'></div>
     `;
     this.grid = this.calendar.querySelector('.grid');
     this.dow = this.calendar.querySelector('.dow-container');
     this.title = this.calendar.querySelector('.title');
+
+    document.body.appendChild(this.calendar);
     this.createTitle();
     this.setDate();
   }
@@ -65,17 +75,17 @@ class Calendar {
     const monthsSelect = months.reduce((acc, month, idx) => {
       return (
         acc +
-        `<option value="${idx}" ${
-          idx === this.selectedMonth ? 'selected' : ''
-        }>${month}</option>`
+        `<option value="${idx}" ${isSelected(
+          idx === this.selectedMonth
+        )}>${month}</option>`
       );
     }, '');
 
     let yearsSelect = '';
     for (let i = 1980; i < 2030; i++) {
-      yearsSelect += `<option value="${i}" ${
-        i === this.selectedYear ? 'selected' : ''
-      }>${i}</option>`;
+      yearsSelect += `<option value="${i}" ${isSelected(
+        i === this.selectedYear
+      )}>${i}</option>`;
     }
 
     this.title.innerHTML = `
@@ -111,14 +121,14 @@ class Calendar {
     }
   }
 
-  createDayTile(dayNum, isChecked) {
+  createDayTile(dayNum, checked) {
     const day = document.createElement('div');
     day.classList = 'day';
     if (dayNum === 0) {
       day.style['grid-column-start'] = this.date.firstDay + 1; // 1-indexed
     }
     day.innerHTML = `
-      <input type='radio' ${isChecked ? 'checked' : ''} id='${this.selector}-${
+      <input type='radio' ${isChecked(checked)} id='${this.selector}-${
       dayNum + 1
     }' name='${this.selector}-dates' />
       <label for='${this.selector}-${dayNum + 1}'>${dayNum + 1}</label>
@@ -127,6 +137,6 @@ class Calendar {
   }
 }
 
-const cal1 = new Calendar('#month-1', '1980-12-4');
-const cal2 = new Calendar('#month-2', '2011-9-15');
-const cal3 = new Calendar('#month-3');
+const cal1 = new Calendar('1980-12-4');
+const cal2 = new Calendar('2011-9-15');
+const cal3 = new Calendar();
