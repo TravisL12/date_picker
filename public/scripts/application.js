@@ -41,15 +41,21 @@ const isChecked = (isChecked) => {
   return isChecked ? 'checked' : '';
 };
 
+// set date format to YYYY-M-D (leading 0's create UTC format)
+const formattedStartDate = (startDate) =>
+  new Date(startDate.replace(/\-0/gi, '-'));
+
+const TODAY = new Date();
 class Calendar {
   constructor(startDate) {
-    this.startDate = startDate ? new Date(startDate) : new Date();
+    this.startDate = startDate ? formattedStartDate(startDate) : new Date();
     this.selector = randomSelector();
     this.calendar = document.createElement('div');
     this.calendar.id = `calendar-${this.selector}`;
     this.calendar.classList.add('calendar');
     this.selectedMonth = this.startDate.getMonth(); // 0-indexed month
     this.selectedYear = this.startDate.getFullYear();
+    this.selectedDay = this.startDate.getDate();
     this.calendar.innerHTML = `
     <form class='title'></form>
     <div class='dow-container'></div>
@@ -82,7 +88,7 @@ class Calendar {
     }, '');
 
     let yearsSelect = '';
-    for (let i = 1980; i < 2030; i++) {
+    for (let i = TODAY.getFullYear() - 50; i < TODAY.getFullYear() + 10; i++) {
       yearsSelect += `<option value="${i}" ${isSelected(
         i === this.selectedYear
       )}>${i}</option>`;
@@ -107,7 +113,7 @@ class Calendar {
   setDate(
     selectedYear = this.selectedYear,
     selectedMonth = this.selectedMonth,
-    selectedDay = this.startDate.getDate()
+    selectedDay = this.selectedDay
   ) {
     if (!this.grid) {
       return;
@@ -133,10 +139,13 @@ class Calendar {
     }' name='${this.selector}-dates' />
       <label for='${this.selector}-${dayNum + 1}'>${dayNum + 1}</label>
     `;
+    day.addEventListener('click', (event) => {
+      this.selectedDay = event.currentTarget.textContent;
+    });
     return day;
   }
 }
 
-const cal1 = new Calendar('1980-12-4');
-const cal2 = new Calendar('2011-9-15');
+const cal1 = new Calendar('1980-12-04');
+const cal2 = new Calendar('2011-09-15');
 const cal3 = new Calendar();
